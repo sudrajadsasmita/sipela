@@ -1,11 +1,11 @@
-class ShopModel {
+class BarangModel {
   List<Data>? data;
   Pagination? pagination;
   String? message;
 
-  ShopModel({this.data, this.pagination, this.message});
+  BarangModel({this.data, this.pagination, this.message});
 
-  ShopModel.fromJson(Map<String, dynamic> json) {
+  BarangModel.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {

@@ -7,12 +7,13 @@ import 'package:layang_layang_app/models/detail_product_model.dart';
 import 'package:layang_layang_app/models/display_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:layang_layang_app/models/transaction_detail_model.dart';
+import 'package:layang_layang_app/ui/widgets/static_base_url.dart';
 
 class DisplayProvider with ChangeNotifier {
   Future<DisplayModel?> listDisplay(String token) async {
     try {
       var response = await http.get(
-        Uri.parse("http://sipela.herokuapp.com/api/barangtoko"),
+        Uri.parse("http://${StaticBaseUrl.baseUrl}/api/barangtoko"),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -44,7 +45,7 @@ class DisplayProvider with ChangeNotifier {
       String token, String barangid) async {
     try {
       var response = await http.get(
-        Uri.parse("http://sipela.herokuapp.com/api/barangtoko/$barangid"),
+        Uri.parse("http://${StaticBaseUrl.baseUrl}/api/barangtoko/$barangid"),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -87,7 +88,7 @@ class DisplayProvider with ChangeNotifier {
       print(body);
       var response = await http.post(
         Uri.parse(
-          "https://sipela.herokuapp.com/api/newtransaction",
+          "http://${StaticBaseUrl.baseUrl}/api/newtransaction",
         ),
         headers: {
           // 'Content-Type': 'application/json',

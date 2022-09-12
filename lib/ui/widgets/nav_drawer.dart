@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:layang_layang_app/providers/auth_provider.dart';
 import 'package:layang_layang_app/providers/user_provider.dart';
+import 'package:layang_layang_app/ui/widgets/pref.dart';
+import 'package:layang_layang_app/ui/widgets/show_snackbar.dart';
+import 'package:layang_layang_app/ui/widgets/static_base_url.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -17,6 +22,20 @@ class _NavDrawerState extends State<NavDrawer> {
   Widget build(BuildContext context) {
     var userProvider = Provider.of<UserProvider>(context);
     var authProvider = Provider.of<AuthProvider>(context);
+    void _logOut() async {
+      var logout = await authProvider.logout(userProvider.user.token!);
+      if (logout!.statusCode == 200) {
+        Pref.destroy();
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          "/login",
+          (route) => false,
+        );
+      } else {
+        GlobalSnackBar.show(context, "Logout failed");
+        Navigator.pop(context);
+      }
+    }
 
     Widget _drawerHeader() {
       return UserAccountsDrawerHeader(
@@ -86,11 +105,16 @@ class _NavDrawerState extends State<NavDrawer> {
         icon: Icons.money,
         text: "Transaksi",
         onTap: () async {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            "/transactionconfirm",
-            (route) => false,
-          );
+          var name = ModalRoute.of(context)!.settings.name;
+          if (name == "/transactionconfirm") {
+            Navigator.pop(context);
+          } else {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              "/transactionconfirm",
+              (route) => false,
+            );
+          }
         },
       ),
       const Divider(
@@ -111,66 +135,74 @@ class _NavDrawerState extends State<NavDrawer> {
         icon: Icons.logout,
         text: "Logout",
         onTap: () async {
-          var ress = await authProvider.logout(userProvider.user.token!);
-
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            "/login",
-            (route) => false,
-          );
+          _logOut();
         },
       ),
     ];
     List<Widget> _menuDistributor = [
       _drawerHeader(),
       _drawerItem(
+        icon: Icons.people,
+        text: "Managemen User",
+        onTap: () async {
+          var name = ModalRoute.of(context)!.settings.name;
+          if (name == "/managemenuser") {
+            Navigator.pop(context);
+          } else {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              "/shop",
+              (route) => false,
+            );
+          }
+        },
+      ),
+      _drawerItem(
         icon: Icons.list,
         text: "List Barang",
         onTap: () async {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            "/requestitempage",
-            (route) => false,
-          );
+          var name = ModalRoute.of(context)!.settings.name;
+          if (name == "/requestitempage") {
+            Navigator.pop(context);
+          } else {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              "/requestitempage",
+              (route) => false,
+            );
+          }
         },
       ),
       _drawerItem(
         icon: Icons.money,
         text: "List Penjualan",
         onTap: () async {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            "/toko",
-            (route) => false,
-          );
+          var name = ModalRoute.of(context)!.settings.name;
+          if (name == "/toko") {
+            Navigator.pop(context);
+          } else {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              "/toko",
+              (route) => false,
+            );
+          }
         },
       ),
       _drawerItem(
         icon: Icons.bookmark,
         text: "Laporan Toko",
         onTap: () async {
-          String url = "https://sipela.herokuapp.com/laporantoko";
-          if (await canLaunchUrl(Uri.parse(url)))
-            await launchUrl(
-              Uri.parse(url),
-              mode: LaunchMode.externalApplication,
+          var name = ModalRoute.of(context)!.settings.name;
+          if (name == "/reporttoko") {
+            Navigator.pop(context);
+          } else {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              "/reporttoko",
+              (route) => false,
             );
-          else
-            throw "Could not launch $url";
-        },
-      ),
-      _drawerItem(
-        icon: Icons.bookmark,
-        text: "Laporan Rekap",
-        onTap: () async {
-          String url = "https://sipela.herokuapp.com/laporanrekap";
-          if (await canLaunchUrl(Uri.parse(url)))
-            await launchUrl(
-              Uri.parse(url),
-              mode: LaunchMode.externalApplication,
-            );
-          else
-            throw "Could not launch $url";
+          }
         },
       ),
       const Divider(
@@ -191,13 +223,7 @@ class _NavDrawerState extends State<NavDrawer> {
         icon: Icons.logout,
         text: "Logout",
         onTap: () async {
-          var ress = await authProvider.logout(userProvider.user.token!);
-
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            "/login",
-            (route) => false,
-          );
+          _logOut();
         },
       ),
     ];
@@ -209,7 +235,7 @@ class _NavDrawerState extends State<NavDrawer> {
         onTap: () async {
           Navigator.pushNamedAndRemoveUntil(
             context,
-            "/shop",
+            "/usermanagement",
             (route) => false,
           );
         },
@@ -220,11 +246,50 @@ class _NavDrawerState extends State<NavDrawer> {
         onTap: () async {
           Navigator.pushNamedAndRemoveUntil(
             context,
-            "/transactionconfirm",
+            "/requestbarangpage",
             (route) => false,
           );
         },
       ),
+      _drawerItem(
+        icon: Icons.add_box,
+        text: "Daftar Barang",
+        onTap: () async {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            "/barangpage",
+            (route) => false,
+          );
+        },
+      ),
+      _drawerItem(
+        icon: Icons.bookmark,
+        text: "Laporan Rekap",
+        onTap: () async {
+          String url = "http://${StaticBaseUrl.baseUrl}/laporanrekap";
+          if (await canLaunchUrl(Uri.parse(url)))
+            await launchUrl(
+              Uri.parse(url),
+              mode: LaunchMode.externalApplication,
+            );
+          else
+            throw "Could not launch $url";
+        },
+      ),
+      // _drawerItem(
+      //   icon: Icons.bookmark,
+      //   text: "Laporan Toko",
+      //   onTap: () async {
+      //     String url = "http://${StaticBaseUrl.baseUrl}/laporantoko";
+      //     if (await canLaunchUrl(Uri.parse(url)))
+      //       await launchUrl(
+      //         Uri.parse(url),
+      //         mode: LaunchMode.externalApplication,
+      //       );
+      //     else
+      //       throw "Could not launch $url";
+      //   },
+      // ),
       const Divider(
         height: 25,
         thickness: 1,
@@ -243,13 +308,7 @@ class _NavDrawerState extends State<NavDrawer> {
         icon: Icons.logout,
         text: "Logout",
         onTap: () async {
-          var ress = await authProvider.logout(userProvider.user.token!);
-
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            "/login",
-            (route) => false,
-          );
+          _logOut();
         },
       ),
     ];
@@ -260,7 +319,7 @@ class _NavDrawerState extends State<NavDrawer> {
             ? _menuCustomer
             : userProvider.user.data!.user!.role == "distributor"
                 ? _menuDistributor
-                : userProvider.user.data!.user!.role == "admin"
+                : userProvider.user.data!.user!.role == "administrator"
                     ? _menuAdmin
                     : [],
       ),

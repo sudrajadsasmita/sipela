@@ -3,7 +3,6 @@ import 'package:layang_layang_app/models/buy_model.dart';
 import 'package:layang_layang_app/models/transaction_detail_model.dart';
 import 'package:layang_layang_app/providers/display_provider.dart';
 import 'package:layang_layang_app/providers/product_detail_provider.dart';
-import 'package:layang_layang_app/providers/product_shop_provider.dart';
 import 'package:layang_layang_app/providers/user_provider.dart';
 import 'package:layang_layang_app/ui/widgets/show_snackbar.dart';
 import 'package:provider/provider.dart';
@@ -97,7 +96,6 @@ class _DetailProductPageState extends State<DetailProductPage> {
 
   @override
   Widget build(BuildContext context) {
-    var productShopProvider = Provider.of<ProductShopProvider>(context);
     var productDetailProvider = Provider.of<ProductDetailProvider>(context);
     var displayProvider = Provider.of<DisplayProvider>(context);
     var userProvider = Provider.of<UserProvider>(context);

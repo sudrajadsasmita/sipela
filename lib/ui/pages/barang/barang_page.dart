@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:layang_layang_app/models/barang_model.dart';
+import 'package:layang_layang_app/models/barang_update_model.dart';
 import 'package:layang_layang_app/models/shop_model.dart';
 import 'package:layang_layang_app/models/toko_model.dart';
 import 'package:layang_layang_app/models/toko_update_model.dart';
+import 'package:layang_layang_app/providers/barang_provider.dart';
 import 'package:layang_layang_app/providers/shop_provider.dart';
 import 'package:layang_layang_app/providers/toko_provider.dart';
 import 'package:layang_layang_app/ui/widgets/nav_drawer.dart';
@@ -10,29 +13,28 @@ import 'package:provider/provider.dart';
 
 import '../../../providers/user_provider.dart';
 
-class ShopPage extends StatefulWidget {
-  const ShopPage({Key? key, required this.title}) : super(key: key);
+class BarangPage extends StatefulWidget {
+  const BarangPage({Key? key, required this.title}) : super(key: key);
   final String title;
 
   @override
-  State<ShopPage> createState() => _ShopPageState();
+  State<BarangPage> createState() => _BarangPageState();
 }
 
-class _ShopPageState extends State<ShopPage> {
-  late Future<TokoModel?> _initData;
+class _BarangPageState extends State<BarangPage> {
+  late Future<BarangModel?> _initData;
   @override
   Widget build(BuildContext context) {
     var userProvider = Provider.of<UserProvider>(context);
-    var tokoProvider = Provider.of<TokoProvider>(context);
-    _initData = tokoProvider.listToko(userProvider.user.token.toString(),
-        userProvider.user.data!.user!.id.toString());
+    var barangProvider = Provider.of<BarangProvider>(context);
+    _initData = barangProvider.getAllBarang(userProvider.user.token.toString());
     return Scaffold(
       drawer: const NavDrawer(),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           Navigator.pushNamed(
             context,
-            '/createshop',
+            '/createbarangpage',
           ).then((_) => setState(() {}));
         },
         child: Icon(Icons.add),
@@ -65,13 +67,26 @@ class _ShopPageState extends State<ShopPage> {
                 color: Colors.blue),
           ),
           Container(
-            child: FutureBuilder<TokoModel?>(
+            child: FutureBuilder<BarangModel?>(
               future: _initData,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   return ListView(
                     children: snapshot.data!.data!.map((e) {
                       return InkWell(
+                        onTap: () async {
+                          barangProvider.barangUpdate = BarangUpdateModel(
+                            barangId: e.id.toString(),
+                            name: e.name,
+                            description: e.description,
+                            price: e.price.toString(),
+                            pictureLink: e.pictureLink,
+                          );
+                          Navigator.pushNamed(
+                            context,
+                            '/updatebarangpage',
+                          ).then((_) => setState(() {}));
+                        },
                         child: Container(
                           margin: EdgeInsets.fromLTRB(12, 2, 12, 2),
                           decoration: BoxDecoration(
@@ -88,8 +103,7 @@ class _ShopPageState extends State<ShopPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Image(
-                                    image:
-                                        AssetImage("assets/images/store.png"),
+                                    image: NetworkImage("${e.pictureLink}"),
                                     height: 100,
                                   ),
                                   SizedBox(
@@ -147,8 +161,8 @@ class _ShopPageState extends State<ShopPage> {
                                                 TextButton(
                                                   onPressed: () async {
                                                     var response =
-                                                        await tokoProvider
-                                                            .deleteToko(
+                                                        await barangProvider
+                                                            .deleteBarang(
                                                       userProvider.user.token
                                                           .toString(),
                                                       e.id.toString(),

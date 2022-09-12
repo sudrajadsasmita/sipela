@@ -1,11 +1,11 @@
-class ShopModel {
+class UserManagementModel {
   List<Data>? data;
   Pagination? pagination;
   String? message;
 
-  ShopModel({this.data, this.pagination, this.message});
+  UserManagementModel({this.data, this.pagination, this.message});
 
-  ShopModel.fromJson(Map<String, dynamic> json) {
+  UserManagementModel.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
@@ -34,27 +34,33 @@ class ShopModel {
 class Data {
   int? id;
   String? name;
-  int? price;
-  String? description;
-  String? pictureLink;
+  String? address;
+  String? gender;
+  String? dateOfBirth;
+  String? whatsapp;
+  User? user;
   String? createdAt;
   String? updatedAt;
 
   Data(
       {this.id,
       this.name,
-      this.price,
-      this.description,
-      this.pictureLink,
+      this.address,
+      this.gender,
+      this.dateOfBirth,
+      this.whatsapp,
+      this.user,
       this.createdAt,
       this.updatedAt});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
-    price = json['price'];
-    description = json['description'];
-    pictureLink = json['picture_link'];
+    address = json['address'];
+    gender = json['gender'];
+    dateOfBirth = json['date-of_birth'];
+    whatsapp = json['whatsapp'];
+    user = json['user'] != null ? new User.fromJson(json['user']) : null;
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }
@@ -63,9 +69,50 @@ class Data {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['name'] = this.name;
-    data['price'] = this.price;
-    data['description'] = this.description;
-    data['picture_link'] = this.pictureLink;
+    data['address'] = this.address;
+    data['gender'] = this.gender;
+    data['date-of_birth'] = this.dateOfBirth;
+    data['whatsapp'] = this.whatsapp;
+    if (this.user != null) {
+      data['user'] = this.user!.toJson();
+    }
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    return data;
+  }
+}
+
+class User {
+  int? id;
+  String? role;
+  String? email;
+  Null? emailVerifiedAt;
+  String? createdAt;
+  String? updatedAt;
+
+  User(
+      {this.id,
+      this.role,
+      this.email,
+      this.emailVerifiedAt,
+      this.createdAt,
+      this.updatedAt});
+
+  User.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    role = json['role'];
+    email = json['email'];
+    emailVerifiedAt = json['email_verified_at'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['role'] = this.role;
+    data['email'] = this.email;
+    data['email_verified_at'] = this.emailVerifiedAt;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     return data;
@@ -76,7 +123,7 @@ class Pagination {
   int? currentPage;
   String? firstPageUrl;
   Null? prevPageUrl;
-  Null? nextPageUrl;
+  String? nextPageUrl;
   String? lastPageUrl;
   int? lastPage;
   int? perPage;

@@ -1,11 +1,11 @@
-class ShopModel {
+class RequestBarangModel {
   List<Data>? data;
   Pagination? pagination;
   String? message;
 
-  ShopModel({this.data, this.pagination, this.message});
+  RequestBarangModel({this.data, this.pagination, this.message});
 
-  ShopModel.fromJson(Map<String, dynamic> json) {
+  RequestBarangModel.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
@@ -33,6 +33,92 @@ class ShopModel {
 
 class Data {
   int? id;
+  String? approvedDate;
+  String? requestStatus;
+  RequestFrom? requestFrom;
+  Barangbase? barangbase;
+  String? createdAt;
+  String? updatedAt;
+
+  Data(
+      {this.id,
+      this.approvedDate,
+      this.requestStatus,
+      this.requestFrom,
+      this.barangbase,
+      this.createdAt,
+      this.updatedAt});
+
+  Data.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    approvedDate = json['approved_date'];
+    requestStatus = json['request_status'];
+    requestFrom = json['request_from'] != null
+        ? new RequestFrom.fromJson(json['request_from'])
+        : null;
+    barangbase = json['barangbase'] != null
+        ? new Barangbase.fromJson(json['barangbase'])
+        : null;
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['approved_date'] = this.approvedDate;
+    data['request_status'] = this.requestStatus;
+    if (this.requestFrom != null) {
+      data['request_from'] = this.requestFrom!.toJson();
+    }
+    if (this.barangbase != null) {
+      data['barangbase'] = this.barangbase!.toJson();
+    }
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    return data;
+  }
+}
+
+class RequestFrom {
+  int? id;
+  String? role;
+  String? email;
+  Null? emailVerifiedAt;
+  String? createdAt;
+  String? updatedAt;
+
+  RequestFrom(
+      {this.id,
+      this.role,
+      this.email,
+      this.emailVerifiedAt,
+      this.createdAt,
+      this.updatedAt});
+
+  RequestFrom.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    role = json['role'];
+    email = json['email'];
+    emailVerifiedAt = json['email_verified_at'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['role'] = this.role;
+    data['email'] = this.email;
+    data['email_verified_at'] = this.emailVerifiedAt;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    return data;
+  }
+}
+
+class Barangbase {
+  int? id;
   String? name;
   int? price;
   String? description;
@@ -40,7 +126,7 @@ class Data {
   String? createdAt;
   String? updatedAt;
 
-  Data(
+  Barangbase(
       {this.id,
       this.name,
       this.price,
@@ -49,7 +135,7 @@ class Data {
       this.createdAt,
       this.updatedAt});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  Barangbase.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     price = json['price'];

@@ -5,27 +5,28 @@ import 'package:layang_layang_app/models/toko_model.dart';
 import 'package:layang_layang_app/providers/toko_detail_provider.dart';
 import 'package:layang_layang_app/providers/toko_provider.dart';
 import 'package:layang_layang_app/providers/user_provider.dart';
+import 'package:layang_layang_app/ui/widgets/static_base_url.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../widgets/nav_drawer.dart';
 
-class TokoPage extends StatefulWidget {
-  const TokoPage({Key? key}) : super(key: key);
+class ReportTokoPage extends StatefulWidget {
+  const ReportTokoPage({Key? key}) : super(key: key);
 
   @override
-  State<TokoPage> createState() => _TokoPageState();
+  State<ReportTokoPage> createState() => _ReportTokoPageState();
 }
 
-class _TokoPageState extends State<TokoPage> {
+class _ReportTokoPageState extends State<ReportTokoPage> {
   @override
   Widget build(BuildContext context) {
     var tokoProvider = Provider.of<TokoProvider>(context);
     var userProvider = Provider.of<UserProvider>(context);
-    var tokoDetailProvider = Provider.of<TokoDetailProvider>(context);
     return Scaffold(
       drawer: const NavDrawer(),
       appBar: AppBar(
-        title: Text("List Toko"),
+        title: Text("Cetak Laporan Toko"),
         centerTitle: true,
         elevation: 0.0,
         actions: <Widget>[
@@ -71,8 +72,16 @@ class _TokoPageState extends State<TokoPage> {
                     children: snapshot.data!.data!.map((e) {
                       return InkWell(
                         onTap: () async {
-                          tokoDetailProvider.tokoId = e.id!;
-                          Navigator.pushNamed(context, "/transactionconfirm");
+                          String url =
+                              "http://${StaticBaseUrl.baseUrl}/laporantoko/${e.id}";
+                          if (await canLaunchUrl(Uri.parse(url))) {
+                            await launchUrl(
+                              Uri.parse(url),
+                              mode: LaunchMode.externalApplication,
+                            );
+                          } else {
+                            throw "Could not launch $url";
+                          }
                         },
                         child: Container(
                           decoration: BoxDecoration(

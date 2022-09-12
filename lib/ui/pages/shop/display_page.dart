@@ -3,39 +3,53 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:layang_layang_app/models/detail_product_model.dart';
 import 'package:layang_layang_app/models/display_model.dart';
+import 'package:layang_layang_app/models/user_model.dart';
 import 'package:layang_layang_app/providers/display_provider.dart';
 import 'package:layang_layang_app/providers/product_detail_provider.dart';
-import 'package:layang_layang_app/providers/product_shop_provider.dart';
 import 'package:layang_layang_app/ui/widgets/nav_drawer.dart';
+import 'package:layang_layang_app/ui/widgets/pref.dart';
 import 'package:provider/provider.dart';
 
 import '../../../providers/user_provider.dart';
 
-class DisplayPage extends StatelessWidget {
-  const DisplayPage({Key? key, required this.title}) : super(key: key);
+class DisplayPage extends StatefulWidget {
   final String title;
+  const DisplayPage({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
+
+  @override
+  State<DisplayPage> createState() => _DisplayPageState();
+}
+
+class _DisplayPageState extends State<DisplayPage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var displayProvider = Provider.of<DisplayProvider>(context);
     var userProvider = Provider.of<UserProvider>(context);
-    var productShopProvider = Provider.of<ProductShopProvider>(context);
     var productDetailProvider = Provider.of<ProductDetailProvider>(context);
-    var token = userProvider.user.token;
+
     return Scaffold(
       drawer: const NavDrawer(),
       appBar: AppBar(
-        title: Text(title),
+        title: Text(widget.title),
         centerTitle: true,
         elevation: 0.0,
         actions: <Widget>[
           Container(
             margin: const EdgeInsets.only(right: 16.0),
             child: InkWell(
-              child: const Icon(Icons.settings),
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Settings')),
-                );
+              child: const Icon(Icons.person),
+              onTap: () async {
+                Navigator.pushNamed(context, '/updateuserprofilepage')
+                    .then((_) => setState(() {}));
               },
             ),
           ),
@@ -62,7 +76,7 @@ class DisplayPage extends StatelessWidget {
               bottom: 8,
             ),
             child: FutureBuilder<DisplayModel?>(
-              future: displayProvider.listDisplay(token!),
+              future: displayProvider.listDisplay(userProvider.user.token!),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   return GridView.count(

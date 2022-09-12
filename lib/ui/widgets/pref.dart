@@ -4,26 +4,27 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Pref {
-  final String token;
+  final String user;
 
   const Pref({
-    required this.token,
+    required this.user,
   });
 
   static setPref(
-    String token,
+    String user,
   ) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    pref.setString("token", token);
+    pref.setString("user", user);
   }
 
-  static getPref() async {
+  static Future<String?> getPref() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    return pref.getString("token");
+    String? user = pref.getString("user");
+    return user;
   }
 
   static destroy() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
-    pref.remove("token");
+    pref.remove("user");
   }
 }

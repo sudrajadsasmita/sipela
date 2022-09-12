@@ -3,6 +3,7 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:layang_layang_app/models/submit_aprove_model.dart';
 import 'package:layang_layang_app/providers/user_provider.dart';
+import 'package:layang_layang_app/ui/pages/tranasaksi/transaction_confirm_page.dart';
 import 'package:layang_layang_app/ui/widgets/custom_drop_down.dart';
 import 'package:layang_layang_app/ui/widgets/show_snackbar.dart';
 import 'package:provider/provider.dart';
@@ -106,7 +107,7 @@ class _UpdateTransactionStatusState extends State<UpdateTransactionStatus> {
               isLoading = false;
             });
             GlobalSnackBar.show(context, "Data Transaksi berhasil di update");
-            Navigator.popAndPushNamed(context, "/transactionconfirm");
+            Navigator.pop(context);
           },
         ),
       ],
@@ -134,7 +135,7 @@ class _UpdateTransactionStatusState extends State<UpdateTransactionStatus> {
                   );
                 },
                 child: Text(
-                  'Beli',
+                  'Ubah Status',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.white,

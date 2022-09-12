@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:layang_layang_app/models/user_model.dart';
 import 'package:layang_layang_app/providers/auth_provider.dart';
@@ -168,44 +170,71 @@ class _LoginPageState extends State<LoginPage> {
                   if (emailController.text.isEmpty ||
                       passwordController.text.isEmpty) {
                     GlobalSnackBar.show(
-                        context, "Field email dan password tidak boleh kosong");
+                        context, "Field email dan password must be not empty");
                     print("kosong");
                   } else {
                     setState(() {
                       isLoading = true;
                     });
                     print("bablas");
-                    UserModel? login = await authProvider.login(
+                    var login = await authProvider.login(
                         emailController.text, passwordController.text);
-                    userProvider.user = login!;
-                    Pref.setPref(login.token!);
-                    if (login.data?.user?.role == "pembeli") {
+                    if (login!.statusCode == 400) {
                       setState(() {
                         isLoading = false;
                       });
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        "/display",
-                        (route) => false,
-                      );
-                    } else if (login.data?.user?.role == "distributor") {
+                      var response = jsonDecode(login.body);
+                      var errors = response["errors"];
+                      if (errors.containsKey("email")) {
+                        String text = "";
+                        for (var element in errors["email"]) {
+                          text += element + '\n';
+                        }
+                        GlobalSnackBar.show(context, text);
+                      } else if (errors.containsKey("password")) {
+                        String text = "";
+                        for (var element in errors["password"]) {
+                          text += element + '\n';
+                        }
+                        GlobalSnackBar.show(context, text);
+                      }
+                    } else if (login.statusCode == 202) {
                       setState(() {
                         isLoading = false;
                       });
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        "/requestitempage",
-                        (route) => false,
+
+                      UserModel user = UserModel.fromJson(
+                        jsonDecode(
+                          login.body,
+                        ),
                       );
-                    } else {
-                      setState(() {
-                        isLoading = false;
-                      });
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        "/display",
-                        (route) => false,
-                      );
+                      userProvider.user = user;
+                      Pref.setPref(login.body);
+                      if (user.data?.user?.role == "pembeli") {
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          "/display",
+                          (route) => false,
+                        );
+                      } else if (user.data?.user?.role == "distributor") {
+                        setState(() {
+                          isLoading = false;
+                        });
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          "/shop",
+                          (route) => false,
+                        );
+                      } else {
+                        setState(() {
+                          isLoading = false;
+                        });
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          "/usermanagement",
+                          (route) => false,
+                        );
+                      }
                     }
                   }
                 },

@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:layang_layang_app/models/auth_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:layang_layang_app/models/user_model.dart';
+import 'package:layang_layang_app/ui/widgets/static_base_url.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider with ChangeNotifier {
-  Future<UserModel?> register(
+  Future<http.Response?> register(
     String? email,
     String? password,
     String? passwordConfirmation,
@@ -21,7 +22,7 @@ class AuthProvider with ChangeNotifier {
       var body = {
         'email': email,
         'password': password,
-        'passwordConfirmation': passwordConfirmation,
+        'password_confirmation': passwordConfirmation,
         'name': name,
         'address': address,
         'gender': gender,
@@ -31,7 +32,7 @@ class AuthProvider with ChangeNotifier {
       print(body);
       var response = await http.post(
         Uri.parse(
-          "https://sipela.herokuapp.com/api/register",
+          "http://${StaticBaseUrl.baseUrl}/api/register",
         ),
         headers: {
           "Accept": "application/json",
@@ -40,26 +41,14 @@ class AuthProvider with ChangeNotifier {
       );
       print(response.statusCode);
       print(response.body);
-
-      if (response.statusCode == 201) {
-        UserModel user = UserModel.fromJson(
-          jsonDecode(
-            response.body,
-          ),
-        );
-
-        return user;
-      } else {
-        print('kenak prank');
-        return null;
-      }
+      return response;
     } catch (e) {
       print(e);
       return null;
     }
   }
 
-  Future<UserModel?> login(
+  Future<http.Response?> login(
     String? email,
     String? password,
   ) async {
@@ -71,7 +60,7 @@ class AuthProvider with ChangeNotifier {
       print(body);
       var response = await http.post(
         Uri.parse(
-          "https://sipela.herokuapp.com/api/login",
+          "http://${StaticBaseUrl.baseUrl}/api/login",
         ),
         headers: {
           "Accept": "application/json",
@@ -80,30 +69,20 @@ class AuthProvider with ChangeNotifier {
       );
       print(response.statusCode);
       print(response.body);
-
-      if (response.statusCode == 201) {
-        return UserModel.fromJson(
-          jsonDecode(
-            response.body,
-          ),
-        );
-      } else {
-        print('kenak prank');
-        return null;
-      }
+      return response;
     } catch (e) {
       print(e);
       return null;
     }
   }
 
-  Future<UserModel?> logout(
+  Future<http.Response?> logout(
     String token,
   ) async {
     try {
       var response = await http.post(
         Uri.parse(
-          "https://sipela.herokuapp.com/api/logout",
+          "http://${StaticBaseUrl.baseUrl}/api/logout",
         ),
         headers: {
           "Accept": "application/json",
@@ -113,16 +92,7 @@ class AuthProvider with ChangeNotifier {
       print(response.statusCode);
       print(response.body);
 
-      if (response.statusCode == 201) {
-        return UserModel.fromJson(
-          jsonDecode(
-            response.body,
-          ),
-        );
-      } else {
-        print('kenak prank');
-        return null;
-      }
+      return response;
     } catch (e) {
       print(e);
       return null;

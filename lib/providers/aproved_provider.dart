@@ -5,6 +5,7 @@ import 'package:layang_layang_app/models/aproved_model.dart';
 import 'package:layang_layang_app/models/submit_aprove_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:layang_layang_app/ui/pages/tranasaksi/update_transaction_status_page.dart';
+import 'package:layang_layang_app/ui/widgets/static_base_url.dart';
 
 class AprovedProvider with ChangeNotifier {
   AprovedModel? _aprove;
@@ -30,7 +31,7 @@ class AprovedProvider with ChangeNotifier {
       print(body);
       var response = await http.put(
         Uri.parse(
-          "https://sipela.herokuapp.com/api/transaction/$transaction_id",
+          "http://${StaticBaseUrl.baseUrl}/api/transaction/$transaction_id",
         ),
         headers: {
           "Accept": "application/json",

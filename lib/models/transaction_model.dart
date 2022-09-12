@@ -85,48 +85,12 @@ class Data {
   }
 }
 
-class User {
-  int? id;
-  String? role;
-  String? email;
-  Null? emailVerifiedAt;
-  String? createdAt;
-  String? updatedAt;
-
-  User(
-      {this.id,
-      this.role,
-      this.email,
-      this.emailVerifiedAt,
-      this.createdAt,
-      this.updatedAt});
-
-  User.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    role = json['role'];
-    email = json['email'];
-    emailVerifiedAt = json['email_verified_at'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['role'] = this.role;
-    data['email'] = this.email;
-    data['email_verified_at'] = this.emailVerifiedAt;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    return data;
-  }
-}
-
 class Transactiondetails {
   int? id;
   Barangtoko? barangtoko;
   Barangbase? barangbase;
   Toko? toko;
+  Profils? profils;
   int? quantity;
   int? subtotal;
   String? createdAt;
@@ -137,6 +101,7 @@ class Transactiondetails {
       this.barangtoko,
       this.barangbase,
       this.toko,
+      this.profils,
       this.quantity,
       this.subtotal,
       this.createdAt,
@@ -151,6 +116,8 @@ class Transactiondetails {
         ? new Barangbase.fromJson(json['barangbase'])
         : null;
     toko = json['toko'] != null ? new Toko.fromJson(json['toko']) : null;
+    profils =
+        json['profils'] != null ? new Profils.fromJson(json['profils']) : null;
     quantity = json['quantity'];
     subtotal = json['subtotal'];
     createdAt = json['created_at'];
@@ -168,6 +135,9 @@ class Transactiondetails {
     }
     if (this.toko != null) {
       data['toko'] = this.toko!.toJson();
+    }
+    if (this.profils != null) {
+      data['profils'] = this.profils!.toJson();
     }
     data['quantity'] = this.quantity;
     data['subtotal'] = this.subtotal;
@@ -276,6 +246,7 @@ class Toko {
   int? userId;
   String? createdAt;
   String? updatedAt;
+  User? user;
 
   Toko(
       {this.id,
@@ -283,12 +254,111 @@ class Toko {
       this.description,
       this.userId,
       this.createdAt,
-      this.updatedAt});
+      this.updatedAt,
+      this.user});
 
   Toko.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     description = json['description'];
+    userId = json['user_id'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    user = json['user'] != null ? new User.fromJson(json['user']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['description'] = this.description;
+    data['user_id'] = this.userId;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    if (this.user != null) {
+      data['user'] = this.user!.toJson();
+    }
+    return data;
+  }
+}
+
+class User {
+  int? id;
+  String? role;
+  String? email;
+  Null? emailVerifiedAt;
+  String? createdAt;
+  String? updatedAt;
+  List<Profils>? profils;
+
+  User(
+      {this.id,
+      this.role,
+      this.email,
+      this.emailVerifiedAt,
+      this.createdAt,
+      this.updatedAt,
+      this.profils});
+
+  User.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    role = json['role'];
+    email = json['email'];
+    emailVerifiedAt = json['email_verified_at'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    if (json['profils'] != null) {
+      profils = <Profils>[];
+      json['profils'].forEach((v) {
+        profils!.add(new Profils.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['role'] = this.role;
+    data['email'] = this.email;
+    data['email_verified_at'] = this.emailVerifiedAt;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    if (this.profils != null) {
+      data['profils'] = this.profils!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Profils {
+  int? id;
+  String? name;
+  String? address;
+  String? gender;
+  String? dateOfBirth;
+  String? whatsapp;
+  int? userId;
+  String? createdAt;
+  String? updatedAt;
+
+  Profils(
+      {this.id,
+      this.name,
+      this.address,
+      this.gender,
+      this.dateOfBirth,
+      this.whatsapp,
+      this.userId,
+      this.createdAt,
+      this.updatedAt});
+
+  Profils.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    address = json['address'];
+    gender = json['gender'];
+    dateOfBirth = json['date_of_birth'];
+    whatsapp = json['whatsapp'];
     userId = json['user_id'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
@@ -298,7 +368,10 @@ class Toko {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['name'] = this.name;
-    data['description'] = this.description;
+    data['address'] = this.address;
+    data['gender'] = this.gender;
+    data['date_of_birth'] = this.dateOfBirth;
+    data['whatsapp'] = this.whatsapp;
     data['user_id'] = this.userId;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;

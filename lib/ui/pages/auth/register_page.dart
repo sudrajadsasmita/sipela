@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:layang_layang_app/ui/widgets/custom_date_birth.dart';
 import 'package:layang_layang_app/ui/widgets/custom_text_field.dart';
 import 'package:layang_layang_app/ui/widgets/custom_text_field_area.dart';
 import 'package:layang_layang_app/ui/widgets/custom_drop_down.dart';
+import 'package:layang_layang_app/ui/widgets/pref.dart';
 import 'package:layang_layang_app/ui/widgets/show_snackbar.dart';
 import 'package:provider/provider.dart';
 
@@ -33,8 +35,9 @@ class _RegisterPageState extends State<RegisterPage> {
       TextEditingController();
   TextEditingController addressController = TextEditingController();
   TextEditingController whatsappController = TextEditingController();
-  String? selectedItem = "Laki - Laki";
+  String? selectedItem = "";
   List<String> gender = [
+    "",
     "Laki - Laki",
     "Perempuan",
   ];
@@ -63,6 +66,17 @@ class _RegisterPageState extends State<RegisterPage> {
           textAlign: TextAlign.left,
         ),
       );
+    }
+
+    void _formValidation(dynamic errors, String key) async {
+      setState(() {
+        isLoading = false;
+      });
+      String text = "";
+      for (var element in errors[key]) {
+        text += element + '\n';
+      }
+      GlobalSnackBar.show(context, text);
     }
 
     Widget email() {
@@ -218,48 +232,43 @@ class _RegisterPageState extends State<RegisterPage> {
                   setState(() {
                     isLoading = true;
                   });
-                  if (emailController.text.isEmpty ||
-                      passwordController.text.isEmpty ||
-                      passwordConfirmationController.text.isEmpty ||
-                      nameController.text.isEmpty ||
-                      addressController.text.isEmpty ||
-                      selectedItem == '' ||
-                      dateInput.text.isEmpty ||
-                      whatsappController.text.isEmpty) {
-                    GlobalSnackBar.show(
-                        context, "Field formtidak boleh kosong");
-                    // print(emailController.text);
-                    // print(passwordController.text);
-                    // print(passwordConfirmationController.text);
-                    // print(nameController.text);
-                    // print(addressController.text);
-                    // print(selectedItem);
-                    // print(dateInput.text);
-                  } else {
-                    if (passwordController.text.toString() !=
-                        passwordConfirmationController.text.toString()) {
-                      GlobalSnackBar.show(context, "Password harus sama");
+                  var register = await authProvider.register(
+                      emailController.text,
+                      passwordController.text,
+                      passwordConfirmationController.text,
+                      nameController.text,
+                      addressController.text,
+                      selectedItem,
+                      dateInput.text,
+                      whatsappController.text);
+                  var response = jsonDecode(register!.body);
+                  var errors = response["errors"];
+                  if (register.statusCode == 400) {
+                    if (errors.containsKey("email")) {
+                      _formValidation(errors, "email");
+                    } else if (errors.containsKey("password")) {
+                      _formValidation(errors, 'password');
+                    } else if (errors.containsKey("name")) {
+                      _formValidation(errors, 'name');
+                    } else if (errors.containsKey("address")) {
+                      _formValidation(errors, 'address');
+                    } else if (errors.containsKey("gender")) {
+                      _formValidation(errors, 'gender');
+                    } else if (errors.containsKey("date_of_birth")) {
+                      _formValidation(errors, 'date_of_birth');
+                    } else if (errors.containsKey("whatsapp")) {
+                      _formValidation(errors, 'whatsapp');
                     } else {
-                      setState(() {
-                        isLoading = false;
-                      });
-                      UserModel? register = await authProvider.register(
-                          emailController.text,
-                          passwordController.text,
-                          passwordConfirmationController.text,
-                          nameController.text,
-                          addressController.text,
-                          selectedItem,
-                          dateInput.text,
-                          whatsappController.text);
-                      userProvider.user = register!;
-
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        "/display",
-                        (route) => false,
-                      );
+                      GlobalSnackBar.show(context, "Your system is error");
                     }
+                  } else if (register.statusCode == 201) {
+                    userProvider.user = UserModel.fromJson(response!);
+                    Pref.setPref(register.body);
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      "/display",
+                      (route) => false,
+                    );
                   }
                 },
                 icon: Icon(Icons.save_as),

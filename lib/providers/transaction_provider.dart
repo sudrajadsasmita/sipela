@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:layang_layang_app/models/transaction_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:layang_layang_app/ui/widgets/static_base_url.dart';
 
 class TransactionProvider with ChangeNotifier {
   Future<TransactionModel?> listTransactionByUser(
@@ -10,7 +11,8 @@ class TransactionProvider with ChangeNotifier {
     try {
       var response = await http.get(
           Uri.parse(
-              "http://sipela.herokuapp.com/api/transaction?filterBy=user_id&filterValue=$user_id"),
+            "http://${StaticBaseUrl.baseUrl}/api/transaction?filterBy=user_id&filterValue=$user_id",
+          ),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
@@ -36,7 +38,7 @@ class TransactionProvider with ChangeNotifier {
     try {
       var response = await http.get(
           Uri.parse(
-              "http://sipela.herokuapp.com/api/transaction?filterBy=toko_id&filterValue=$user_id"),
+              "http://${StaticBaseUrl.baseUrl}/api/transaction?filterBy=toko_id&filterValue=$user_id"),
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',

@@ -6,13 +6,20 @@ import 'package:layang_layang_app/providers/toko_detail_provider.dart';
 import 'package:layang_layang_app/providers/transaction_provider.dart';
 import 'package:layang_layang_app/ui/widgets/nav_drawer.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../providers/user_provider.dart';
 
-class TransactionConfirmPage extends StatelessWidget {
+class TransactionConfirmPage extends StatefulWidget {
   const TransactionConfirmPage({Key? key, required this.title})
       : super(key: key);
   final String title;
+
+  @override
+  State<TransactionConfirmPage> createState() => _TransactionConfirmPageState();
+}
+
+class _TransactionConfirmPageState extends State<TransactionConfirmPage> {
   @override
   Widget build(BuildContext context) {
     var userProvider = Provider.of<UserProvider>(context);
@@ -24,18 +31,17 @@ class TransactionConfirmPage extends StatelessWidget {
           ? null
           : NavDrawer(),
       appBar: AppBar(
-        title: Text(title),
+        title: Text(widget.title),
         centerTitle: true,
         elevation: 0.0,
         actions: <Widget>[
           Container(
             margin: const EdgeInsets.only(right: 16.0),
             child: InkWell(
-              child: const Icon(Icons.settings),
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Settings')),
-                );
+              child: const Icon(Icons.person),
+              onTap: () async {
+                Navigator.pushNamed(context, '/updateuserprofilepage')
+                    .then((_) => setState(() {}));
               },
             ),
           ),
@@ -61,6 +67,19 @@ class TransactionConfirmPage extends StatelessWidget {
                   return ListView(
                     children: snapshot.data!.data!.map(
                       (e) {
+                        void loadWhatsApp() async {
+                          String url =
+                              "https://wa.me/${e.transactiondetails!.profils!.whatsapp}?text=Hallo saya ingin konfirmasi transaksi";
+                          if (await canLaunchUrl(Uri.parse(url))) {
+                            await launchUrl(
+                              Uri.parse(url),
+                              mode: LaunchMode.externalApplication,
+                            );
+                          } else {
+                            throw "Could not launch $url";
+                          }
+                        }
+
                         return InkWell(
                           onTap: () async {
                             userProvider.user.data!.user!.role == "distributor"
@@ -75,8 +94,9 @@ class TransactionConfirmPage extends StatelessWidget {
                                 : null;
                             userProvider.user.data!.user!.role == "distributor"
                                 ? Navigator.pushNamed(
-                                    context, "/updatetransaction")
-                                : null;
+                                        context, '/updatetransaction')
+                                    .then((_) => setState(() {}))
+                                : loadWhatsApp();
                           },
                           child: Container(
                             margin: EdgeInsets.fromLTRB(12, 2, 12, 2),
@@ -123,7 +143,7 @@ class TransactionConfirmPage extends StatelessWidget {
                                         Text(
                                           userProvider.user.data!.user!.role ==
                                                   "pembeli"
-                                              ? "${e.transactiondetails!.toko!.name!}"
+                                              ? "${e.transactiondetails!.barangtoko!.toko!.name}"
                                               : "${e.cutomer!.email}",
                                           style: TextStyle(
                                             fontSize: 12,
